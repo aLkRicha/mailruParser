@@ -10,7 +10,9 @@ Download and place binary from archive to bin folder - http://phantomjs.org/down
 ## Usage
 run parser worker
 ```
-env/bin/python test.py --debug --gearman_host example.tld
+env/bin/python test.py --gearman_host example.tld
+--debug  - for console log
+--chrome - for using Chrome webdriver instead of PhantomJS
 ```
 
 Next, send to your gearman server task to `parseFriends` and as data send json with same structure:

@@ -4,24 +4,27 @@ import time
 import argparse
 import re
 import json
-import pprint
 from gearman import GearmanWorker
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--debug', help='enable debug mode', action="store_true")
+parser.add_argument('--chrome', help='using Chrome webdriver instead of PhantomJS', action="store_true")
 parser.add_argument('--gearman_host', help='provide gearman host', required=True)
 args = parser.parse_args()
 debug = args.debug
+chrome = args.chrome
 
 class browser:
     """docstring for browser."""
-    debug = False
 
-    def __init__(self, debug):
-        self.browser = webdriver.PhantomJS()
-        # self.browser = webdriver.Chrome()
-        self.browser.command_executor._commands['executePhantomScript'] = ('POST', '/session/$sessionId/phantom/execute')
-        self.resourceRequestedLogic()
+    def __init__(self, debug = False, chrome = False ):
+        if chrome:
+            self.chrome = chrome
+            self.browser = webdriver.Chrome()
+        else:
+            self.browser = webdriver.PhantomJS()
+            self.browser.command_executor._commands['executePhantomScript'] = ('POST', '/session/$sessionId/phantom/execute')
+            self.resourceRequestedLogic()
         self.debug = debug
 
 
@@ -95,7 +98,8 @@ class browser:
         for el in friends:
             emails.append(el.get_attribute('data-email'))
         self.log('\tGet {} emails.'.format(len(friends)))
-        self.clearDriverCache()
+        if not self.chrome:
+            self.clearDriverCache()
         return emails
 
     def getUrl(self, url):
@@ -115,7 +119,7 @@ class browser:
 
 def parseFriends(worker, job):
     jobArr = json.loads(job.data)
-    br = browser(debug)
+    br = browser(debug, chrome)
     br.auth(jobArr['auth'])
     jobResult = br.getUsersFriends(jobArr['users'])
     br.closeAll()
