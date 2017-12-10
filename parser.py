@@ -5,6 +5,7 @@ import json
 import os
 import pickle
 import time
+import sys
 
 from gearman import GearmanWorker
 from selenium import webdriver
@@ -42,8 +43,10 @@ class Browser:
         if not self.head:
             options.add_argument('headless')
             options.add_argument("disable-gpu")
-        print(4)
-        self.browser = webdriver.Chrome(chrome_options=options)
+        try:
+            self.browser = webdriver.Chrome(chrome_options=options)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
         print(5)
 
     def auth(self, credentials):
