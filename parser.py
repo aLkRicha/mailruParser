@@ -43,6 +43,7 @@ class Browser:
         print(3)
         if not self.head:
             options.add_argument('headless')
+            options.add_argument('no-sandbox')
             options.add_argument("disable-gpu")
         try:
             self.browser = webdriver.Chrome(chrome_options=options)
