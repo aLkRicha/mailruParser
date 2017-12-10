@@ -46,7 +46,9 @@ class Browser:
         try:
             self.browser = webdriver.Chrome(chrome_options=options)
         except:
-            print "Unexpected error:", sys.exc_info()[0]
+            e = sys.exc_info()[0]
+            print("<p>Error: %s</p>" % e)
+            raise 
         print(5)
 
     def auth(self, credentials):
