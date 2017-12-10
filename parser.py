@@ -32,14 +32,19 @@ class Browser:
     def __init__(self, debug=False, head=False):
         self.head = head
         self.debug = debug
+        print(1)
         self.open_window()
 
     def open_window(self):
+        print(2)
         options = webdriver.ChromeOptions()
+        print(3)
         if not self.head:
             options.add_argument('headless')
             options.add_argument("disable-gpu")
+        print(4)
         self.browser = webdriver.Chrome(chrome_options=options)
+        print(5)
 
     def auth(self, credentials):
         br = self.browser
@@ -160,13 +165,12 @@ class Browser:
 
 def parse_friends(worker, job):
     job_arr = json.loads(job.data)
-    print(1)
     br = Browser(debug, head)
-    print(2)
     br.auth(job_arr['auth'])
     job_result = br.get_users_friends(job_arr['users'])
     br.close_all()
     return json.dumps(job_result)
+
 
 worker = GearmanWorker([args.gearman_host])
 worker.register_task('parseFriends', parse_friends)
