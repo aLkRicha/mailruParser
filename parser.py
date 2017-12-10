@@ -159,17 +159,15 @@ class Browser:
 
 
 def parse_friends(worker, job):
-    print(job.data)
     job_arr = json.loads(job.data)
+    print(1)
     br = Browser(debug, head)
+    print(2)
     br.auth(job_arr['auth'])
     job_result = br.get_users_friends(job_arr['users'])
     br.close_all()
     return json.dumps(job_result)
 
-print(1)
 worker = GearmanWorker([args.gearman_host])
-print(2)
 worker.register_task('parseFriends', parse_friends)
-print(3)
 worker.work()
