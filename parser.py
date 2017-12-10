@@ -170,4 +170,4 @@ def parse_friends(worker, job):
 
 worker = GearmanWorker([args.gearman_host])
 worker.register_task('parseFriends', parse_friends)
-worker.work(0)
+worker.work(-1)
