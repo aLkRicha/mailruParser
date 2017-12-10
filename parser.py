@@ -167,7 +167,9 @@ def parse_friends(worker, job):
     br.close_all()
     return json.dumps(job_result)
 
-
+print(1)
 worker = GearmanWorker([args.gearman_host])
+print(2)
 worker.register_task('parseFriends', parse_friends)
-worker.work(-1)
+print(3)
+worker.work()
