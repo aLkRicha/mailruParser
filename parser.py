@@ -4,12 +4,10 @@ import datetime
 import json
 import os
 import pickle
-import re
 import time
 
 from gearman import GearmanWorker
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -19,7 +17,7 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--debug', help='enable debug mode', action="store_true")
-parser.add_argument('--head', help='using Chrome webdriver instead of PhantomJS', action="store_true")
+parser.add_argument('--head', help='using chrome driver in non-headless mode', action="store_true")
 parser.add_argument('--gearman_host', help='provide gearman host', required=True)
 args = parser.parse_args()
 debug = args.debug
@@ -37,24 +35,22 @@ class Browser:
         self.open_window()
 
     def open_window(self):
-        chrome_options = Options()
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--start-maximized")
+        options = webdriver.ChromeOptions()
         if not self.head:
-            chrome_options.add_argument("headless")
-        chrome_options.add_argument("disable-gpu")
-        self.browser = webdriver.Chrome(chrome_options=chrome_options)
+            options.add_argument('headless')
+            options.add_argument("disable-gpu")
+        self.browser = webdriver.Chrome(chrome_options=options)
 
-    def auth(self, credencials):
+    def auth(self, credentials):
         br = self.browser
-        self.credentials = credencials
+        self.credentials = credentials
         try:
             self.log('Authentication with cookies:')
             self.load_auth_cookies()
             br.find_element_by_css_selector('.b-left-menu__avatar')
-            self.log('--=> Success')
+            self.log('---> Success')
         except:
-            self.log('--=> Failed')
+            self.log('---> Failed')
             self.log('Authentication with email/password')
             br.get('https://my.mail.ru')
             login = br.find_element_by_class_name("l-loginform_row_label_input")
@@ -128,11 +124,8 @@ class Browser:
         ActionChains(br).move_to_element(friends_link).perform()
         friends_link.click()
         time.sleep(2)
-
-        self.log('Start scrolling friends list')
-        # Get scroll height
+        self.log('---> Start scrolling friends list')
         last_height = br.execute_script("return document.body.scrollHeight")
-
         while True:
             br.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
@@ -143,7 +136,7 @@ class Browser:
         self.log('---> Scrolling complete')
         friends = br.find_element_by_class_name("b-catalog__friends-items").find_elements_by_tag_name('ul')
         emails = []
-        self.log('Parsing emails')
+        self.log('---> Parsing emails')
         for el in friends:
             emails.append(el.get_attribute('data-email'))
         return emails
