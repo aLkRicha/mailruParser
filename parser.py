@@ -13,6 +13,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import WebDriverException
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -45,10 +46,10 @@ class Browser:
             options.add_argument("disable-gpu")
         try:
             self.browser = webdriver.Chrome(chrome_options=options)
-        except:
-            e = sys.exc_info()[0]
-            print("<p>Error: %s</p>" % e)
-            raise 
+        except WebDriverException as err:
+            print(err.msg)
+            print(err.message)
+            raise
         print(5)
 
     def auth(self, credentials):
